@@ -24,8 +24,8 @@ from planar.co_planar import co_planar
 from arguments import ModelParams, PipelineParams, OptimizationParams, PriorParams
 from planar.training_report import prepare_output_and_logger, training_report
 
-os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
-os.environ['TORCH_USE_CUDA_DSA'] = '1'
+# os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+# os.environ['TORCH_USE_CUDA_DSA'] = '1'
 
 def training(dataset, opt, pipe, prp, test_iters, saving_iterations, checkpoint_iterations, checkpoint):
     first_iter = 0
@@ -236,7 +236,7 @@ if __name__ == "__main__":
     parser.add_argument("--test_iterations", nargs="+", type=int, default=[1, 7000, 14000, 20000, 30000])
     parser.add_argument("--save_iterations", nargs="+", type=int, default=[7_000, 30_000])
     parser.add_argument("--quiet", action="store_true")
-    parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[6999, 13999, 19999])
+    parser.add_argument("--checkpoint_iterations", nargs="+", type=int, default=[])
     parser.add_argument("--start_checkpoint", type=str, default = None)     
     args = parser.parse_args(sys.argv[1:])
 

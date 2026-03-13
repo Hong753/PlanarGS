@@ -95,14 +95,14 @@ def LP3(model, prp, text_prompts, vis, device="cuda"):   # Set vis=True to visua
         # Segmentation from boxes
         segmentation.load_image(file_path)
         masks = segmentation.get_segmentation_mask(boxes_filt)
-        
+
         distance_mask = MaskDistance(depth, normal, inv_K, prp.dis_thresh)
         if prp.visdebug:
             visualMask(distance_mask, path=camdebug_folder, filename="distance")
 
         masks = masks * distance_mask
         masks, pred_phrases, boxes_filt = NormalSplit(masks, pred_phrases, boxes_filt, normal, prp.normal_split, camdebug_folder)
-
+        
         masks_previous, pred_previous = FilterMask(masks, pred_phrases)
         add_previous = True
         previous_cam = LP3Cam(cam_info=cam, depth=depth, preds=pred_previous, masks=masks_previous)
