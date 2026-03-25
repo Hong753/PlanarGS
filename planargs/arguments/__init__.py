@@ -111,9 +111,9 @@ class OptimizationParams(ParamGroup):
 
 class PriorParams(ParamGroup):
     def __init__(self, parser):
-        self.ckpt_mv = "ckpt/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
-        self.ckpt_det = "ckpt/groundingdino_swint_ogc.pth"
-        self.ckpt_seg = "ckpt/sam_vit_h_4b8939.pth"
+        self.ckpt_mv = "checkpoints/planargs/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth"
+        self.ckpt_det = "checkpoints/planargs/groundingdino_swint_ogc.pth"
+        self.ckpt_seg = "checkpoints/planargs/sam_vit_h_4b8939.pth"
 
         self.visdebug = False
         self.prune_ratio = 0.001

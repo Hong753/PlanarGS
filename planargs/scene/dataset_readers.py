@@ -12,7 +12,7 @@
 import os
 import sys
 from planargs.scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec2rotmat, \
-    read_extrinsics_binary, read_intrinsics_binary, read_points3D_binary
+    read_extrinsics_binary, read_intrinsics_binary, read_points3D_binary, read_points3D_text
 from planargs.common_utils.graphics_utils import focal2fov
 from planargs.scene.ply_loader import SceneInfo, CameraInfo, getNerfppNorm, storePly, fetchPly
 import numpy as np
@@ -116,16 +116,17 @@ def readColmapSceneInfo(path, eval, llffhold=8):
     else:
         train_list = [idx for idx in range(N)]
 
-
-    ply_path = os.path.join(path, "sparse/points3D.ply")
-    bin_path = os.path.join(path, "sparse/points3D.bin")
-    if os.path.exists(bin_path):
-        xyz, rgb, points3d = read_points3D_binary(bin_path)
-        print("Converting point3d.bin to .ply.")
+    ply_path = os.path.join(path, "sparse/0/points3D.ply")
+    bin_path = os.path.join(path, "sparse/0/points3D.bin")
+    txt_path = os.path.join(path, "sparse/0/points3D.txt")
+    points3d = None
+    if not os.path.exists(ply_path):
+        print("Converting point3d.bin to .ply, will happen only the first time you open the scene.")
+        try:
+            xyz, rgb, points3d = read_points3D_binary(bin_path)
+        except:
+            xyz, rgb, _ = read_points3D_text(txt_path)
         storePly(ply_path, xyz, rgb)
-    else:
-        points3d = None
-
     try:
         pcd = fetchPly(ply_path)
     except:
