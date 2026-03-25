@@ -3,9 +3,9 @@ import os
 import torch
 import uuid
 from argparse import Namespace
-from scene import Scene
-from common_utils.loss_utils import psnr
-from planar.visualize import visualDepth, visualNorm, visualMask, visualSegmask
+from planargs.scene import Scene
+from planargs.common_utils.loss_utils import psnr
+from planargs.planar.visualize import visualDepth, visualNorm, visualMask, visualSegmask
 
 try:
     from torch.utils.tensorboard import SummaryWriter

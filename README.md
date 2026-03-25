@@ -27,7 +27,7 @@ Install submodules:
 ``` shell
 pip install -e submodules/simple-knn --no-build-isolation 
 pip install -e submodules/pytorch3d --no-build-isolation   
-pip install submodules/diff-plane-rasterization --no-build-isolation   
+pip install submodules/diff-plane-rasterization --no-build-isolation
 ```
 ### Installation of GroundedSAM
 We use the pre-trained vision-language foundational model [GroundedSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) in the Pipeline for Language-prompted planar priors (LP3). You can download and install it following:
@@ -36,9 +36,9 @@ cd submodules
 git clone https://github.com/IDEA-Research/Grounded-Segment-Anything.git 
 mv Grounded-Segment-Anything groundedsam
 
-cd groundedsam && pip install -e segment_anything
-pip install --no-build-isolation -e GroundingDINO 
-&& cd ../..
+cd ~/real2mesh/third_party/groundedsam
+pip install -e segment_anything
+pip install --no-build-isolation -e GroundingDINO
 ```
 - Please download checkpoints of GroundedSAM from [link1](https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth
 ) and [link2](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth), and put them into the `ckpt` folder.

@@ -1,19 +1,15 @@
 import torch
 from PIL import Image
 import cv2
-import sys
-import os
-sys.path.append(os.path.join(os.getcwd(), "submodules/groundedsam/GroundingDINO"))
-sys.path.append(os.path.join(os.getcwd(), "submodules/groundedsam/segment_anything"))
 
 # Grounding DINO
-import submodules.groundedsam.GroundingDINO.groundingdino.datasets.transforms as T
-from submodules.groundedsam.GroundingDINO.groundingdino.models import build_model
-from submodules.groundedsam.GroundingDINO.groundingdino.util.slconfig import SLConfig
-from submodules.groundedsam.GroundingDINO.groundingdino.util.utils import clean_state_dict, get_phrases_from_posmap
+import groundingdino.datasets.transforms as T
+from groundingdino.models import build_model
+from groundingdino.util.slconfig import SLConfig
+from groundingdino.util.utils import clean_state_dict, get_phrases_from_posmap
 
 # segment anything
-from submodules.groundedsam.segment_anything.segment_anything import (
+from segment_anything import (
     sam_model_registry,
     SamPredictor
 )
@@ -29,7 +25,7 @@ def keep_or_wall(s):
 class GroundingDINO:
 
     def __init__(self, device):
-        self.config_file = "./submodules/groundedsam/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
+        self.config_file = "./third_party/groundedsam/GroundingDINO/groundingdino/config/GroundingDINO_SwinT_OGC.py"
         
         self.box_threshold = 0.25
         self.text_threshold = 0.2

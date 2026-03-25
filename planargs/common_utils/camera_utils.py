@@ -9,9 +9,9 @@
 # For inquiries contact  george.drettakis@inria.fr
 #
 
-from scene.cameras import Camera
+from planargs.scene.cameras import Camera
 import numpy as np
-from common_utils.graphics_utils import fov2focal
+from planargs.common_utils.graphics_utils import fov2focal
 import sys
 
 WARNED = False

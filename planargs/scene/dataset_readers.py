@@ -11,10 +11,10 @@
 
 import os
 import sys
-from scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec2rotmat, \
+from planargs.scene.colmap_loader import read_extrinsics_text, read_intrinsics_text, qvec2rotmat, \
     read_extrinsics_binary, read_intrinsics_binary, read_points3D_binary
-from common_utils.graphics_utils import focal2fov
-from scene.ply_loader import SceneInfo, CameraInfo, getNerfppNorm, storePly, fetchPly
+from planargs.common_utils.graphics_utils import focal2fov
+from planargs.scene.ply_loader import SceneInfo, CameraInfo, getNerfppNorm, storePly, fetchPly
 import numpy as np
 import json
 import torch

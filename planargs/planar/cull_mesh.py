@@ -1,7 +1,7 @@
 import numpy as np
 import torch
-from scene.dataset_readers import readColmapSceneInfo
-from common_utils.graphics_utils import get_k
+from planargs.scene.dataset_readers import readColmapSceneInfo
+from planargs.common_utils.graphics_utils import get_k
 
 
 def cull_mesh(rec_mesh, data_path, trans=None, eval=False):

@@ -1,9 +1,9 @@
 
 import numpy as np
-from scene.gaussian_model import BasicPointCloud
+from planargs.scene.gaussian_model import BasicPointCloud
 from typing import NamedTuple
 from dataclasses import dataclass
-from common_utils.graphics_utils import getWorld2View2
+from planargs.common_utils.graphics_utils import getWorld2View2
 import numpy as np
 from plyfile import PlyData, PlyElement
 

@@ -15,8 +15,8 @@ import numpy as np
 from PIL import Image
 import os, cv2
 import json
-from common_utils.general_utils import PILtoTorch
-from common_utils.graphics_utils import getWorld2View2, getProjectionMatrix, get_k, ThickenLines
+from planargs.common_utils.general_utils import PILtoTorch
+from planargs.common_utils.graphics_utils import getWorld2View2, getProjectionMatrix, get_k, ThickenLines
 
 
 class Camera(nn.Module):

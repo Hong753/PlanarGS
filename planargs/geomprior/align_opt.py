@@ -1,5 +1,5 @@
 import torch
-from common_utils.loss_utils import l2_loss
+from planargs.common_utils.loss_utils import l2_loss
 
 def OptimizeGroupDepth(source, target, weight, prep, device="cuda"):
     """

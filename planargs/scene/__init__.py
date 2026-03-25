@@ -12,10 +12,10 @@
 import os
 import json
 import random
-from scene.dataset_readers import readColmapSceneInfo
-from scene.gaussian_model import GaussianModel
-from arguments import ModelParams, PriorParams
-from common_utils.camera_utils import cameraList_from_camInfos, camera_to_JSON
+from planargs.scene.dataset_readers import readColmapSceneInfo
+from planargs.scene.gaussian_model import GaussianModel
+from planargs.arguments import ModelParams, PriorParams
+from planargs.common_utils.camera_utils import cameraList_from_camInfos, camera_to_JSON
 
 class Scene:
 

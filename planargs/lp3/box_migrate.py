@@ -1,9 +1,9 @@
 import numpy as np
 import torch
-from common_utils.graphics_utils import Pointscam2Depth, Depth2Pointscam, get_k
+from planargs.common_utils.graphics_utils import Pointscam2Depth, Depth2Pointscam, get_k
 from dataclasses import dataclass
-from scene.colmap_loader import Camera
-from planar.visualize import visualSegmask
+from planargs.scene.colmap_loader import Camera
+from planargs.planar.visualize import visualSegmask
 
 @dataclass
 class LP3Cam:

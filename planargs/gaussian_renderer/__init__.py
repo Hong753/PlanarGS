@@ -13,9 +13,9 @@ import torch
 import math
 from diff_plane_rasterization import GaussianRasterizationSettings as PlaneGaussianRasterizationSettings
 from diff_plane_rasterization import GaussianRasterizer as PlaneGaussianRasterizer
-from scene.gaussian_model import GaussianModel
-from common_utils.sh_utils import eval_sh
-from common_utils.graphics_utils import NormalFromDepth, RenderDistance
+from planargs.scene.gaussian_model import GaussianModel
+from planargs.common_utils.sh_utils import eval_sh
+from planargs.common_utils.graphics_utils import NormalFromDepth, RenderDistance
 
 
 def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, scaling_modifier = 1.0, override_color = None, 

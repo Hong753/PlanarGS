@@ -1,6 +1,6 @@
 import torch
-from common_utils.graphics_utils import Depth2Pointscam
-from planar.densify_points import InitialPlaneSeg, SegPoints
+from planargs.common_utils.graphics_utils import Depth2Pointscam
+from planargs.planar.densify_points import InitialPlaneSeg, SegPoints
 
 
 def co_planar(depth, segmask, inv_K):

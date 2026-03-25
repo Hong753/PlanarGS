@@ -1,7 +1,7 @@
 import os
 import json
 import numpy as np
-from geomprior.regreader_utils import LoadGroupDepth
+from .regreader_utils import LoadGroupDepth
 
 def clamp(x, min_v, max_v):
     return max(min_v, min(x, max_v))

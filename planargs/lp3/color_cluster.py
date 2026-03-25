@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 import torch
-from common_utils.graphics_utils import RenderDistance, ThickenLines, Depth2Pointscam              
+from planargs.common_utils.graphics_utils import RenderDistance, ThickenLines, Depth2Pointscam              
 
 
 def merge_similar(masks, image_rgb, color_thresh=50):

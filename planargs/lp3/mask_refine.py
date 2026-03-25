@@ -1,7 +1,7 @@
 import re
 import torch
-from lp3.color_cluster import SplitPic, MaxConnect
-from planar.visualize import visualSegmask
+from planargs.lp3.color_cluster import SplitPic, MaxConnect
+from planargs.planar.visualize import visualSegmask
 
 
 def equal(a, b):
