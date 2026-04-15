@@ -11,7 +11,7 @@
 
 #define BOX_SIZE 1024
 
-#include "floah.h"
+#include <floah.h>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include "simple_knn.h"

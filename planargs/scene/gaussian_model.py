@@ -162,7 +162,7 @@ class GaussianModel:
         
         points_np = np.asarray(pcd.points)
         colors_np = np.asarray(pcd.colors)
-        max_init_points = 500_000 # distCUDA2 uses too much VRAM
+        max_init_points = 5_000_000 # distCUDA2 uses too much VRAM
         
         if points_np.shape[0] > max_init_points:
             inds = np.random.choice(points_np.shape[0], max_init_points, replace=False)
