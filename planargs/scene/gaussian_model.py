@@ -159,15 +159,28 @@ class GaussianModel:
 
     def create_from_pcd(self, pcd : BasicPointCloud, spatial_lr_scale : float):
         self.spatial_lr_scale = spatial_lr_scale
-        fused_point_cloud = torch.tensor(np.asarray(pcd.points)).float().cuda()
-        fused_color = RGB2SH(torch.tensor(np.asarray(pcd.colors)).float().cuda())
+        
+        points_np = np.asarray(pcd.points)
+        colors_np = np.asarray(pcd.colors)
+        max_init_points = 500_000 # distCUDA2 uses too much VRAM
+        
+        if points_np.shape[0] > max_init_points:
+            inds = np.random.choice(points_np.shape[0], max_init_points, replace=False)
+            points_np = points_np[inds]
+            colors_np = colors_np[inds]
+            print(f"[Init] Randomly sampled point cloud: {max_init_points} / {len(pcd.points)}")
+        else:
+            print(f"[Init] Using full point cloud: {points_np.shape[0]}")
+        
+        fused_point_cloud = torch.tensor(points_np).float().cuda()
+        fused_color = RGB2SH(torch.tensor(colors_np).float().cuda())
         features = torch.zeros((fused_color.shape[0], 3, (self.max_sh_degree + 1) ** 2)).float().cuda()
         features[:, :3, 0 ] = fused_color
         features[:, 3:, 1:] = 0.0
 
         print("Number of points at initialisation : ", fused_point_cloud.shape[0])
-
-        dist = torch.sqrt(torch.clamp_min(distCUDA2(torch.from_numpy(np.asarray(pcd.points)).float().cuda()), 0.0000001)) 
+        
+        dist = torch.sqrt(torch.clamp_min(distCUDA2(torch.from_numpy(points_np).float().cuda()), 0.0000001)) 
         # print(f"new scale {torch.quantile(dist, 0.1)}")
         scales = torch.log(dist)[...,None].repeat(1, 3)
         rots = torch.zeros((fused_point_cloud.shape[0], 4), device="cuda")  
