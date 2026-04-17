@@ -180,15 +180,15 @@ class GaussianModel:
 
         print("Number of points at initialisation : ", fused_point_cloud.shape[0])
         
-        dist = torch.sqrt(torch.clamp_min(distCUDA2(torch.from_numpy(points_np).float().cuda()), 0.0000001)) 
+        dist = torch.sqrt(torch.clamp_min(distCUDA2(torch.from_numpy(points_np).float().cuda()), 0.0000001))
         # print(f"new scale {torch.quantile(dist, 0.1)}")
         scales = torch.log(dist)[...,None].repeat(1, 3)
-        rots = torch.zeros((fused_point_cloud.shape[0], 4), device="cuda")  
+        rots = torch.zeros((fused_point_cloud.shape[0], 4), device="cuda")
         rots[:, 0] = 1
 
         opacities = inverse_sigmoid(0.1 * torch.ones((fused_point_cloud.shape[0], 1), dtype=torch.float, device="cuda"))
 
-        knn_f = torch.randn((fused_point_cloud.shape[0], 6)).float().cuda()  
+        knn_f = torch.randn((fused_point_cloud.shape[0], 6)).float().cuda()
         self._xyz = nn.Parameter(fused_point_cloud.requires_grad_(True))
         self._knn_f = nn.Parameter(knn_f.requires_grad_(True))
         self._features_dc = nn.Parameter(features[:,:,0:1].transpose(1, 2).contiguous().requires_grad_(True))
@@ -196,7 +196,7 @@ class GaussianModel:
         self._scaling = nn.Parameter(scales.requires_grad_(True))
         self._rotation = nn.Parameter(rots.requires_grad_(True))
         self._opacity = nn.Parameter(opacities.requires_grad_(True))
-        self.max_radii2D = torch.zeros((self.get_xyz.shape[0]), device="cuda")  
+        self.max_radii2D = torch.zeros((self.get_xyz.shape[0]), device="cuda")
         self.max_weight = torch.zeros((self.get_xyz.shape[0]), device="cuda")
 
     def training_setup(self, training_args):
