@@ -506,6 +506,10 @@ class GaussianModel:
     def plane_initdensify(self, viewpoint_cam, vis_mask, prp):
         gs_points = self.get_xyz
         planarmasks, prior_depth = viewpoint_cam.planarmask, viewpoint_cam.priordepth
+        
+        if planarmasks is None or prior_depth is None:
+            return
+        
         R = torch.from_numpy(viewpoint_cam.R).float().cuda()
         T = torch.from_numpy(viewpoint_cam.T).float().cuda()
         all_points_distance = torch.mean(torch.sqrt(torch.clamp_min(distCUDA2(gs_points), 0.0000001)))
