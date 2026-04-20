@@ -70,9 +70,34 @@ def LP3(model, prp, text_prompts, vis, device="cuda"):   # Set vis=True to visua
         file_path = os.path.join(cam.path, "images", cam.image_name[0] + cam.image_name[1])
         image_name = cam.image_name[0]
         geom_folder = os.path.join(cam.path, "geomprior")
-        depth, normal = LoadGeomprior(geom_folder, image_name, cam.size)
+
+        # Kamera-Groesse und Intrinsics ZUERST auslesen, damit der
+        # Resize-Block darunter H und W kennt.
         W, H = cam.size
         K, inv_K = get_k(cam.FovX, cam.FovY, H, W)
+
+        depth, normal = LoadGeomprior(geom_folder, image_name, cam.size)
+        # DUSt3R-Priors wurden auf Original-Frames berechnet, die undistortierten
+        # Bilder sind aber leicht kleiner (image_undistorter beschneidet Raender).
+        # Resize auf die tatsaechliche Kamera-Groesse, damit alle nachfolgenden
+        # Operationen (MaskDistance, NormalSplit, etc.) konsistente Dimensionen haben.
+        if depth.shape[-2:] != (H, W):
+            depth_t = depth if isinstance(depth, torch.Tensor) else torch.from_numpy(depth)
+            while depth_t.dim() < 4:
+                depth_t = depth_t.unsqueeze(0)
+            depth_t = torch.nn.functional.interpolate(depth_t.float(), size=(H, W), mode='bilinear', align_corners=False)
+            while depth_t.dim() > (2 if not isinstance(depth, torch.Tensor) else depth.dim()):
+                depth_t = depth_t.squeeze(0)
+            depth = depth_t.numpy() if not isinstance(depth, torch.Tensor) else depth_t
+
+            normal_t = normal if isinstance(normal, torch.Tensor) else torch.from_numpy(normal)
+            while normal_t.dim() < 4:
+                normal_t = normal_t.unsqueeze(0)
+            normal_t = torch.nn.functional.interpolate(normal_t.float(), size=(H, W), mode='bilinear', align_corners=False)
+            while normal_t.dim() > (3 if not isinstance(normal, torch.Tensor) else normal.dim()):
+                normal_t = normal_t.squeeze(0)
+            normal = normal_t.numpy() if not isinstance(normal, torch.Tensor) else normal_t
+
         if prp.visdebug:
             camdebug_folder = os.path.join(debug_folder, image_name)
             os.makedirs(camdebug_folder, exist_ok=True)
@@ -94,12 +119,18 @@ def LP3(model, prp, text_prompts, vis, device="cuda"):   # Set vis=True to visua
 
         # Segmentation from boxes
         segmentation.load_image(file_path)
+        #masks = segmentation.get_segmentation_mask(boxes_filt)
         masks = segmentation.get_segmentation_mask(boxes_filt)
-
+        # SAM erzeugt Masken in der Aufloesung der Bilddatei auf der Festplatte.
+        # Diese kann von der Kamera-Modell-Groesse abweichen (nach Undistortion).
+        if masks.shape[-2:] != (H, W):
+            masks = torch.nn.functional.interpolate(
+                masks.float(), size=(H, W), mode='nearest')
         distance_mask = MaskDistance(depth, normal, inv_K, prp.dis_thresh)
         if prp.visdebug:
             visualMask(distance_mask, path=camdebug_folder, filename="distance")
-
+        #print(f"DEBUG: masks={masks.shape}, distance_mask={distance_mask.shape}, #depth={depth.shape}, normal={normal.shape}, cam.size={cam.size}, H={H}, W={W}")
+        masks = masks * distance_mask
         masks = masks * distance_mask
         masks, pred_phrases, boxes_filt = NormalSplit(masks, pred_phrases, boxes_filt, normal, prp.normal_split, camdebug_folder)
         

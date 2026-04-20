@@ -31,16 +31,11 @@ def AlignGroupDepth(group_cam_infos, depth_list, pcd, conf_list, vis_path, prep,
 
         # Select only the points visible in the current view.
         valid_point3D_ids = cam_info.points3d_ids[cam_info.points3d_ids != -1]
-        count = 0
-        xyz = []
-        errors = []
-        for pid_3d in pcd[:,0]:
-            for pid in valid_point3D_ids:
-                if pid_3d == pid:   
-                    errors.append(pcd[count, 1])
-                    xyz.append(pcd[count, 2:5])
-                    continue
-            count += 1
+        # Set-basierter Lookup statt verschachtelter Schleife: O(N) statt O(N*M)
+        valid_set = set(valid_point3D_ids.tolist())
+        mask = np.array([pid in valid_set for pid in pcd[:, 0]])
+        xyz = pcd[mask, 2:5].tolist()
+        errors = pcd[mask, 1].tolist()
         errors = torch.from_numpy(np.array(errors)).to(device)
         xyz = torch.from_numpy(np.array(xyz)).float().to(device)
 
@@ -48,10 +43,15 @@ def AlignGroupDepth(group_cam_infos, depth_list, pcd, conf_list, vis_path, prep,
         K, inv_K = get_k(cam_info.FovX, cam_info.FovY, height, width)
         R = torch.from_numpy(cam_info.R).float().to(device)
         T = torch.from_numpy(cam_info.T).float().to(device)
-        points3d = R.t() @ xyz.t() + T.view(3, 1)  # (3, N)
 
-        # Assign weights to the point cloud based on COLMAP quality.
-        depthmap, colmap_weight = Pointscam2Depth(K, points3d, size=(height, width), depth=True, errors=errors)
+        # Wenn keine sichtbaren 3D-Punkte fuer diese Kamera vorhanden sind,
+        # leere Tiefenkarte und Null-Gewichtung erzeugen statt crashen.
+        if xyz.numel() == 0:
+            depthmap = torch.zeros((height, width), device=device)
+        else:
+            points3d = R.t() @ xyz.t() + T.view(3, 1)  # (3, N)
+            # Assign weights to the point cloud based on COLMAP quality.
+            depthmap, colmap_weight = Pointscam2Depth(K, points3d, size=(height, width), depth=True, errors=errors)
         depthmap_list.append(depthmap)  # d_sparse
         colmapweight_list.append(colmap_weight) 
        

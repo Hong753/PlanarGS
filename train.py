@@ -103,8 +103,16 @@ def training(dataset, opt, pipe, prp, test_iters, saving_iterations, checkpoint_
         # Pick a random Camera
         viewpoint_stack = scene.getTrainCameras().copy()
         viewpoint_cam = viewpoint_stack.pop(randint(0, len(viewpoint_stack)-1))
-        gt_image, prior_depth, prior_normal = viewpoint_cam.gt_image, viewpoint_cam.priordepth, viewpoint_cam.priornormal
-        canny_mask, planarmasks, conf_mask = viewpoint_cam.canny_mask, viewpoint_cam.planarmask, viewpoint_cam.depth_conf
+        #gt_image, prior_depth, prior_normal = viewpoint_cam.gt_image, #viewpoint_cam.priordepth, viewpoint_cam.priornormal
+        #canny_mask, planarmasks, conf_mask = viewpoint_cam.canny_mask, #viewpoint_cam.planarmask, viewpoint_cam.depth_conf
+        # Bei --data_device cpu liegen alle Kamera-Daten auf der CPU.
+        # Fuer den Training-Loop muessen sie auf der GPU sein.
+        gt_image = viewpoint_cam.gt_image.cuda()
+        prior_depth = viewpoint_cam.priordepth.cuda() if viewpoint_cam.priordepth is not None else None
+        prior_normal = viewpoint_cam.priornormal.cuda() if viewpoint_cam.priornormal is not None else None
+        canny_mask = viewpoint_cam.canny_mask.cuda()
+        planarmasks = viewpoint_cam.planarmask.cuda() if viewpoint_cam.planarmask is not None else None
+        conf_mask = viewpoint_cam.depth_conf.cuda() if viewpoint_cam.depth_conf is not None else None
        
         # Iterations for depth/normal rendering
         iter_argu = min(opt.dnloss_iteration, opt.planar_iteration, opt.priordepth_iteration)

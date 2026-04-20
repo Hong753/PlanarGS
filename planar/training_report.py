@@ -66,7 +66,20 @@ def training_report(tb_writer, iteration, Ll1, loss, dn_loss, plane_loss, prior_
                 for idx, viewpoint in enumerate(config['cameras']):
                     out = renderFunc(viewpoint, scene.gaussians, *renderArgs)
                     image = out["render"].clamp(0.0, 1.0)
-                    gt_image = viewpoint.gt_image
+                    #gt_image = viewpoint.gt_image
+                    gt_image = viewpoint.gt_image.cuda()
+                    gt_image = viewpoint.gt_image.cuda()
+                    # --data_device cpu: alle Kamera-Daten temporaer auf GPU
+                    if viewpoint.priordepth is not None and not viewpoint.priordepth.is_cuda:
+                        viewpoint.priordepth = viewpoint.priordepth.cuda()
+                    if viewpoint.depth_conf is not None and not viewpoint.depth_conf.is_cuda:
+                        viewpoint.depth_conf = viewpoint.depth_conf.cuda()
+                    if viewpoint.planarmask is not None and not viewpoint.planarmask.is_cuda:
+                        viewpoint.planarmask = viewpoint.planarmask.cuda()
+                    if viewpoint.canny_mask is not None and not viewpoint.canny_mask.is_cuda:
+                        viewpoint.canny_mask = viewpoint.canny_mask.cuda()
+                    if viewpoint.priornormal is not None and not viewpoint.priornormal.is_cuda:
+                        viewpoint.priornormal = viewpoint.priornormal.cuda()
 
                     if tb_writer and (idx < 5):
                         rendered_normal = out["rendered_normal"]

@@ -27,6 +27,8 @@ def PlaneMaskGS(points_3d, planarmasks, mask, K, R, T):
 
     u_coords = valid_projected_points[:, 0].long()
     v_coords = valid_projected_points[:, 1].long()
+    #labels = planarmasks[v_coords, u_coords]
+    planarmasks = planarmasks.to(v_coords.device)
     labels = planarmasks[v_coords, u_coords]
     result_mask[valid_selected_indices] = labels.to(torch.int)  
 
