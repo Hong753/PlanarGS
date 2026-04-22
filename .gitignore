@@ -4,4 +4,4 @@ build
 output
 *.pth
 submodules/groundedsam
-ckpt
+ckpt*.so

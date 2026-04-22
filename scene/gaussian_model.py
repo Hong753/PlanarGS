@@ -490,9 +490,20 @@ class GaussianModel:
             self.densification_postfix(new_xyz, new_knn_f, new_features_dc, new_features_rest, new_opacities, new_scaling, new_rotation)
 
 
+#    def plane_initdensify(self, viewpoint_cam, vis_mask, prp):
+#        gs_points = self.get_xyz
+#        planarmasks, prior_depth = viewpoint_cam.planarmask, #viewpoint_cam.priordepth
     def plane_initdensify(self, viewpoint_cam, vis_mask, prp):
         gs_points = self.get_xyz
-        planarmasks, prior_depth = viewpoint_cam.planarmask, viewpoint_cam.priordepth
+        # Bei --data_device cpu liegen planarmasks und prior_depth auf der CPU.
+        # Fuer die nachfolgenden GPU-Operationen (Depth2Pointscam, PlaneMaskGS,
+        # distCUDA2) muessen sie auf der GPU sein.
+        planarmasks = viewpoint_cam.planarmask
+        prior_depth = viewpoint_cam.priordepth
+        if planarmasks is not None and not planarmasks.is_cuda:
+            planarmasks = planarmasks.cuda()
+        if prior_depth is not None and not prior_depth.is_cuda:
+            prior_depth = prior_depth.cuda()
         R = torch.from_numpy(viewpoint_cam.R).float().cuda()
         T = torch.from_numpy(viewpoint_cam.T).float().cuda()
         all_points_distance = torch.mean(torch.sqrt(torch.clamp_min(distCUDA2(gs_points), 0.0000001)))
