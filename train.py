@@ -188,7 +188,7 @@ def training(dataset, opt, pipe, prp, test_iters, saving_iterations, checkpoint_
                     "Planeloss": f"{ema_planar_for_log:.{5}f}",
                     "PriorDeploss": f"{ema_priordep_for_log:.{5}f}",
                     "PriorNormloss": f"{ema_priornorm_for_log:.{5}f}",
-                    "Points": f"{len(gaussians.get_xyz)}"
+                    "Points": f"{len(gaussians.get_xyz)}",
                 }
                 progress_bar.set_postfix(loss_dict)
                 progress_bar.update(10)
