@@ -1,6 +1,8 @@
 import torch
 from common_utils.loss_utils import l2_loss
 
+#----------------------------------------------------------------------------
+
 def OptimizeGroupDepth(source, target, weight, prep, device="cuda"):
     """
     Optimize scale and shift to minimize the discrepancy between the source and target depth maps.
@@ -92,4 +94,4 @@ def OptimizeGroupDepth(source, target, weight, prep, device="cuda"):
 
     return refined_source, param, loss
 
-
+#----------------------------------------------------------------------------

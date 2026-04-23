@@ -12,22 +12,23 @@ PlanarGS combines planar priors from the LP3 pipeline and geometric priors from 
 ## Installation
 
 ```shell
-git clone https://github.com/SJTU-ViSYS-team/PlanarGS.git --recursive  
+git clone git@github.com:Hong753/planargs.git --recursive
 cd PlanarGS
 
 conda create -n planargs python=3.10
 conda activate planargs
 pip install cmake==3.20.*
 
-pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu118  #replace your cuda version
+# PyTorch, CUDA 12.1
+pip install torch==2.5.1 torchvision==0.20.1 --index-url https://download.pytorch.org/whl/cu121
 
 pip install -r requirements.txt 
 ```
 Install submodules:
 ``` shell
-pip install -e submodules/simple-knn --no-build-isolation 
-pip install -e submodules/pytorch3d --no-build-isolation   
-pip install submodules/diff-plane-rasterization --no-build-isolation   
+pip install --no-build-isolation git+https://github.com/camenduru/simple-knn
+pip install -e submodules/pytorch3d --no-build-isolation
+pip install submodules/diff-plane-rasterization --no-build-isolation
 ```
 ### Installation of GroundedSAM
 We use the pre-trained vision-language foundational model [GroundedSAM](https://github.com/IDEA-Research/Grounded-Segment-Anything) in the Pipeline for Language-prompted planar priors (LP3). You can download and install it following:
@@ -37,7 +38,8 @@ git clone https://github.com/IDEA-Research/Grounded-Segment-Anything.git
 mv Grounded-Segment-Anything groundedsam
 
 cd groundedsam && pip install -e segment_anything
-pip install --no-build-isolation -e GroundingDINO 
+pip install --no-build-isolation -e GroundingDINO
+pip install "transformers<4.52"
 && cd ../..
 ```
 - Please download checkpoints of GroundedSAM from [link1](https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth

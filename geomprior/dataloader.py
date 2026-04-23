@@ -1,11 +1,62 @@
 import os
 import json
 import numpy as np
+
 from geomprior.regreader_utils import LoadGroupDepth
+
+#----------------------------------------------------------------------------
 
 def clamp(x, min_v, max_v):
     return max(min_v, min(x, max_v))
 
+#----------------------------------------------------------------------------
+
+def GroupAlign(prep, cam_infos, points3d, geomprior_path, vis): 
+    param_path = os.path.join(geomprior_path, "depth_param.json")
+    if not os.path.exists(param_path):
+        with open(param_path, 'w') as f:
+            json.dump({}, f)
+    with open(param_path, 'r') as f:
+        params = json.load(f)
+
+    group_folders = [
+        name
+        for name in os.listdir(geomprior_path)
+        if name.startswith("_group")
+        and os.path.isdir(os.path.join(geomprior_path, name))
+    ]
+    for idx in range(len(group_folders)):
+        group = group_folders[idx]
+        group_path = os.path.join(geomprior_path, group) 
+        groupdepth_folder = os.path.join(group_path, "depth") 
+        groupconf_folder = os.path.join(group_path, "confs")
+        
+        group_name = [
+            os.path.splitext(f)[0]
+            for f in os.listdir(groupdepth_folder)
+            if os.path.isfile(os.path.join(groupdepth_folder, f))
+            and f.endswith(".npy")
+        ]
+        group_cam_infos = [
+            cam_info
+            for cam_info in cam_infos
+            if cam_info.image_name[0] in group_name
+        ]
+        
+        print(f"\nStart aligning depth {group}:")
+        if vis:
+            vis_path = geomprior_path
+        else:
+            vis_path = None
+        
+        depthinfo_list, depth_params = LoadGroupDepth(group_cam_infos, groupdepth_folder, groupconf_folder, points3d, vis_path, prep)
+        SaveDepthInfo(prep, depthinfo_list, geomprior_path)
+
+        params[group] = depth_params
+        with open(param_path, 'w') as f:
+            json.dump(params, f, indent=4)
+
+#----------------------------------------------------------------------------
 
 def SaveDepthInfo(prep, all_depthinfo, geomprior_path):
     save_conffolder = os.path.join(geomprior_path, "resized_confs")
@@ -36,8 +87,8 @@ def SaveDepthInfo(prep, all_depthinfo, geomprior_path):
     for idx in range(len(all_depthinfo)):
         depthinfo = all_depthinfo[idx]
         cam_info = depthinfo.cam_info
-        np.save(os.path.join(save_depthfolder, cam_info.image_name[0] + ".npy"), depthinfo.depth_aligned) 
-        np.save(os.path.join(save_normalfolder, cam_info.image_name[0] + ".npy"), depthinfo.prior_normal) 
+        np.save(os.path.join(save_depthfolder, cam_info.image_name[0] + ".npy"), depthinfo.depth_aligned)
+        np.save(os.path.join(save_normalfolder, cam_info.image_name[0] + ".npy"), depthinfo.prior_normal)
         depth_conf = depthinfo.depth_conf / max_conf
         np.save(os.path.join(save_conffolder, cam_info.image_name[0] + ".npy"), depth_conf)  
 
@@ -46,55 +97,4 @@ def SaveDepthInfo(prep, all_depthinfo, geomprior_path):
         with open(save_weights, 'w') as f:
             json.dump(weights, f, indent=4)
 
-
-def GroupAlign(prep, cam_infos, points3d, geomprior_path, vis): 
-    param_path = os.path.join(geomprior_path, "depth_param.json")
-    if not os.path.exists(param_path):
-        with open(param_path, 'w') as f:
-            json.dump({}, f)
-    with open(param_path, 'r') as f:
-        params = json.load(f)
-
-    group_folders = [
-        name
-        for name in os.listdir(geomprior_path)
-        if name.startswith("_group")
-        and os.path.isdir(os.path.join(geomprior_path, name))
-    ]
-    all_depthinfo = []
-
-    for idx in range(len(group_folders)):
-        group = group_folders[idx]
-        group_path = os.path.join(geomprior_path, group) 
-        groupdepth_folder = os.path.join(group_path, "depth") 
-        groupconf_folder = os.path.join(group_path, "confs") 
-        group_name = [
-            os.path.splitext(f)[0]
-            for f in os.listdir(groupdepth_folder)
-            if os.path.isfile(os.path.join(groupdepth_folder, f))
-            and f.endswith(".npy")
-        ]
-        group_cam_infos = [
-            cam_info
-            for cam_info in cam_infos
-            if cam_info.image_name[0] in group_name
-        ]
-        
-        print(f"\nStart aligning depth {group}:")
-        if vis:
-            vis_path = geomprior_path
-        else:
-            vis_path = None
-        depthinfo_list, depth_params = LoadGroupDepth(group_cam_infos, groupdepth_folder, groupconf_folder, points3d, vis_path, prep)
-        all_depthinfo.extend(depthinfo_list)
-
-        params[group] = depth_params
-        with open(param_path, 'w') as f:
-            json.dump(params, f, indent=4)
-
-    SaveDepthInfo(prep, all_depthinfo, geomprior_path)
-
-
-
-        
-            
+#----------------------------------------------------------------------------

@@ -4,4 +4,7 @@ build
 output
 *.pth
 submodules/groundedsam
-ckpt*.so
+submodules/pytorch3d
+ckpt
+*.so
+.spyproject
